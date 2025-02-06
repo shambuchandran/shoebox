@@ -1,6 +1,7 @@
 package com.example.shoebox.data.shoeLocalDB
 
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import com.example.shoebox.data.shoeModel.Shoe
 
@@ -12,6 +13,20 @@ data class ShoeEntity(
     val description: String,
     val imageId: Int
 )
-//mapper for model and entity
 fun ShoeEntity.toShoe() = Shoe(id, name, price, description, imageId)
 fun Shoe.toEntity() = ShoeEntity(id, name, price, description, imageId)
+
+
+@Entity(
+    tableName = "cart_items",
+    foreignKeys = [ForeignKey(
+        entity = ShoeEntity::class,
+        parentColumns = ["id"],
+        childColumns = ["shoeId"],
+        onDelete = ForeignKey.CASCADE
+    )]
+)
+data class CartEntity(
+    @PrimaryKey val shoeId: String,
+    val quantity: Int
+)

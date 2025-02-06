@@ -6,7 +6,7 @@ import kotlinx.coroutines.delay
 
 class MockShoeApi {
     suspend fun getShoes(): List<Shoe> {
-        delay(2000) // api response time mock
+        delay(2000) // api response time delay
         return listOf(
             Shoe(
                 "1", "Oxford Formal", 1229.99,

@@ -9,7 +9,7 @@ plugins {
 
 android {
     namespace = "com.example.shoebox"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.shoebox"
@@ -69,6 +69,7 @@ dependencies {
     // Navigation
     val nav_version = "2.7.7"
     implementation ("androidx.navigation:navigation-compose:$nav_version")
+    implementation ("com.google.accompanist:accompanist-navigation-animation:0.32.0")
 
     // Room
     val room_version = "2.6.1"
