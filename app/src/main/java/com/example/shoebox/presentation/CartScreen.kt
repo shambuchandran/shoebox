@@ -1,6 +1,7 @@
 package com.example.shoebox.presentation
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -41,6 +42,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.shoebox.data.shoeModel.CartItem
+import com.example.shoebox.data.shoeModel.Shoe
 import com.example.shoebox.domain.CartViewModel
 import kotlinx.coroutines.launch
 
@@ -48,11 +50,12 @@ import kotlinx.coroutines.launch
 @Composable
 fun CartScreen(
     cartViewModel: CartViewModel,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onShoeClick: (Shoe) -> Unit
 ) {
     val cartItems by cartViewModel.cartItems.collectAsState()
     val totalPrice by cartViewModel.totalPrice.collectAsState()
-    val snackBarState= remember { SnackbarHostState() }
+    val snackBarState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
@@ -67,7 +70,7 @@ fun CartScreen(
             )
         },
         bottomBar = {
-            Column (
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
@@ -93,7 +96,7 @@ fun CartScreen(
                     Text("Checkout")
                 }
             }
-        },snackbarHost = { SnackbarHost(snackBarState) }
+        }, snackbarHost = { SnackbarHost(snackBarState) }
     ) { padding ->
         if (cartItems.isEmpty()) {
             Box(
@@ -105,11 +108,11 @@ fun CartScreen(
                 Text("Your cart is empty", style = MaterialTheme.typography.titleMedium)
             }
         } else {
-            LazyColumn (modifier = Modifier.padding(padding)) {
+            LazyColumn(modifier = Modifier.padding(padding)) {
                 items(cartItems) { item ->
                     CartItemRow(item, onRemoveClick = {
                         cartViewModel.removeFromCart(item)
-                    })
+                    }, onImageClick = { shoe -> onShoeClick(shoe) })
                 }
             }
         }
@@ -119,7 +122,8 @@ fun CartScreen(
 @Composable
 fun CartItemRow(
     item: CartItem,
-    onRemoveClick: () -> Unit
+    onRemoveClick: () -> Unit,
+    onImageClick: (Shoe) -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -138,12 +142,21 @@ fun CartItemRow(
                 modifier = Modifier
                     .size(80.dp)
                     .clip(RoundedCornerShape(8.dp))
+                    .clickable { onImageClick(item.shoe) }
             )
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(item.shoe.name, style = MaterialTheme.typography.bodyLarge)
-                Text("$${item.shoe.price}", style = MaterialTheme.typography.bodyMedium, color = Color.Blue)
-                Text("Quantity: ${item.quantity}", style = MaterialTheme.typography.bodyMedium, color = Color.Red)
+                Text(
+                    "$${item.shoe.price}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Blue
+                )
+                Text(
+                    "Quantity: ${item.quantity}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Red
+                )
             }
             IconButton(onClick = onRemoveClick) {
                 Icon(Icons.Default.Delete, contentDescription = "Remove")

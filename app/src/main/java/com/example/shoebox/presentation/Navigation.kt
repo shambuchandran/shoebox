@@ -36,9 +36,13 @@ fun ShoeAppNavigation(
                 viewModel = shoeViewModel,
                 cartViewModel = cartViewModel,
                 onShoeSelected = { shoe ->
-                    navController.navigate("details/${shoe.id}")
+                    navController.navigate("details/${shoe.id}"){
+                        launchSingleTop = true
+                    }
                 },
-                onCartClick = { navController.navigate("cart") }
+                onCartClick = { navController.navigate("cart"){
+                    launchSingleTop = true
+                } }
             )
         }
         composable(
@@ -52,13 +56,23 @@ fun ShoeAppNavigation(
                 shoe = shoe ?: return@composable,
                 cartViewModel = cartViewModel,
                 onBack = { navController.popBackStack() },
-                onCartClick = { navController.navigate("cart") }
+                onCartClick = {
+                    navController.navigate("cart"){
+                        popUpTo("details/{shoeId}") { inclusive = true }
+                    }
+                }
             )
         }
         composable("cart") {
-            CartScreen(cartViewModel) {
-                navController.popBackStack()
-            }
+            CartScreen(
+                cartViewModel = cartViewModel,
+                onBackClick = { navController.popBackStack() },
+                onShoeClick = { shoe ->
+                    navController.navigate("details/${shoe.id}"){
+                        popUpTo("cart") { inclusive = true }
+                    }
+                }
+            )
         }
     }
 }
